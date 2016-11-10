@@ -2,8 +2,8 @@
   "compilerOptions": {
     // "module": "commonjs",
     "target": "es5",
-    "rootDir": "js",
+    "rootDir": "boreGenerator",
     "sourceMap": true,
-    "outFile": "modeShapes3/out.js"
+    "outFile": "boreGenerator/out.js"
   }
 }
