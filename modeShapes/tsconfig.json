@@ -2,8 +2,8 @@
   "compilerOptions": {
     // "module": "commonjs",
     "target": "es5",
-    "rootDir": "js",
+    "rootDir": "web",
     "sourceMap": true,
-    "outFile": "modeShapes3/out.js"
+    "outFile": "web/out.js"
   }
 }
