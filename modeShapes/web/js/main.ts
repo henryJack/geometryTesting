@@ -71,5 +71,35 @@ function render() {
   animateWithTime(timeSeconds, nodes, inputData.eigenValue, inputData.eigenVector);
 }
 
+
+
+var a = inputData.eigenVector;
+var indexOfMaxValue = a.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+var MaxValue = a[indexOfMaxValue];
+
+// elements of eigenVectors go (x, y, z, Rx, Ry, Rz, ... and repeat) 
+
+if (indexOfMaxValue % 6 == 0 || indexOfMaxValue % 6 == 1 || indexOfMaxValue % 6 == 2) {
+  // normalise and scale eigenvector according max value from the positional entries only
+  // normalise by diving though by the max value
+  // Scale by multiplying through by a geometry scaling factor (average length of bounding box)
+}
+
+else if (indexOfMaxValue % 6 == 3 || indexOfMaxValue % 6 == 4) {
+  // jiggery pokery normalise according to biggest value with modulo 0,1,2 (just need to know math.max for every 0th, 1st, 2nd element)
+  // Scale by multiplying through by a geometry scaling factor (average length of bounding box)
+
+}
+
+else if (indexOfMaxValue % 6 == 5) {
+  //normalise using this value 
+  //then scale by multiply by Math.Pi for tortional modes
+
+}
+
+
+console.log("indexOfMaxValue = " + indexOfMaxValue);
+console.log("maxValue = " + MaxValue);
+
 init();
 render();

@@ -41,11 +41,11 @@ var inputData;
         [2, 2, 2],
         [3, 2, 2],
     ];
-    inputData.nodeMass = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    inputData.nodeMass = [0.5, 0.7, 0.9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     inputData.eigenValue = 2;
     inputData.eigenVector = [1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
-        1, 1, 1, 10, 1, 1,
+        1, 1, 1, 10, 10, 1,
         1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
@@ -55,8 +55,8 @@ var inputData;
         1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
-        1, 1, 1, 1, 1, 1,
-        1, 1, 1, 1, 1, 1];
+        1, 1, 1, 1, 10, 1,
+        1, 1, 2, 1, 2, 2];
 })(inputData || (inputData = {}));
 var nodeSetGeometry;
 (function (nodeSetGeometry) {
@@ -154,6 +154,18 @@ function render() {
     var timeSeconds = clock.getElapsedTime();
     animateWithTime(timeSeconds, nodes, inputData.eigenValue, inputData.eigenVector);
 }
+var a = inputData.eigenVector;
+var indexOfMaxValue = a.reduce(function (iMax, x, i, arr) { return x > arr[iMax] ? i : iMax; }, 0);
+var MaxValue = a[indexOfMaxValue];
+// elements of eigenVectors go (x, y, z, Rx, Ry, Rz, ... and repeat) 
+if (indexOfMaxValue % 6 == 0 || indexOfMaxValue % 6 == 1 || indexOfMaxValue % 6 == 2) {
+}
+else if (indexOfMaxValue % 6 == 3 || indexOfMaxValue % 6 == 4) {
+}
+else if (indexOfMaxValue % 6 == 5) {
+}
+console.log("indexOfMaxValue = " + indexOfMaxValue);
+console.log("maxValue = " + MaxValue);
 init();
 render();
 //# sourceMappingURL=out.js.map
