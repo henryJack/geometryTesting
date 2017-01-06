@@ -104,6 +104,10 @@ var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 var clock;
 var nodes = new nodeSetGeometry.Cubes(inputData.nodeStore, inputData.nodeMass, 0.5);
+var modeShapeScaleFactor = 1; //should be based on bounding box of scene
+var tortionalScaleFactor = Math.PI;
+var scaledEigenValue = 1; // essentially the speed of the animation, default sahould be 1 but we should show the normalised value on screen
+var scaledEigenVector = scaleEigenVector(inputData.eigenVector, modeShapeScaleFactor, tortionalScaleFactor);
 function init() {
     scene = new THREE.Scene();
     for (var _i = 0, _a = nodes.meshArray; _i < _a.length; _i++) {
@@ -144,28 +148,52 @@ function onWindowResize() {
     controls.handleResize();
     render();
 }
-function animateWithTime(time, nodes, EigenValue, EigenVector) {
+function animateWithTime(time, nodes, EigenVector, EigenValue) {
     controls.update();
-    animations.updateNodePositions(time, nodes, inputData.eigenVector, inputData.eigenValue);
+    animations.updateNodePositions(time, nodes, EigenVector, EigenValue);
     renderer.render(scene, camera);
 }
 function render() {
     requestAnimationFrame(render);
     var timeSeconds = clock.getElapsedTime();
-    animateWithTime(timeSeconds, nodes, inputData.eigenValue, inputData.eigenVector);
+    animateWithTime(timeSeconds, nodes, scaledEigenVector, scaledEigenValue);
 }
-var a = inputData.eigenVector;
-var indexOfMaxValue = a.reduce(function (iMax, x, i, arr) { return x > arr[iMax] ? i : iMax; }, 0);
-var MaxValue = a[indexOfMaxValue];
-// elements of eigenVectors go (x, y, z, Rx, Ry, Rz, ... and repeat) 
-if (indexOfMaxValue % 6 == 0 || indexOfMaxValue % 6 == 1 || indexOfMaxValue % 6 == 2) {
+function scaleEigenVector(eigenVector, geometricScaleFactor, tortionalScaleFactor) {
+    var indexOfMaxValue = eigenVector.reduce(function (iMax, x, i, arr) { return x > arr[iMax] ? i : iMax; }, 0);
+    var maxValue = eigenVector[indexOfMaxValue];
+    if (indexOfMaxValue % 6 == 0 || indexOfMaxValue % 6 == 1 || indexOfMaxValue % 6 == 2) {
+        var normalisedEigenVector = scalarMultiply(inputData.eigenVector, 1 / maxValue);
+        var scaledEigenVector = scalarMultiply(normalisedEigenVector, geometricScaleFactor);
+        return scaledEigenVector;
+    }
+    else if (indexOfMaxValue % 6 == 3 || indexOfMaxValue % 6 == 4) {
+        var maxXYZValue = maxValueXYZ(inputData.eigenVector);
+        var normalisedEigenVector = scalarMultiply(inputData.eigenVector, 1 / maxXYZValue);
+        var scaledEigenVector = scalarMultiply(normalisedEigenVector, geometricScaleFactor);
+        return scaledEigenVector;
+    }
+    else if (indexOfMaxValue % 6 == 5) {
+        var normalisedEigenVector = scalarMultiply(inputData.eigenVector, 1 / maxValue);
+        var scaledEigenVector = scalarMultiply(normalisedEigenVector, tortionalScaleFactor);
+        return scaledEigenVector;
+    }
 }
-else if (indexOfMaxValue % 6 == 3 || indexOfMaxValue % 6 == 4) {
+function scalarMultiply(arr, multiplier) {
+    for (var i = 0; i < arr.length; i++) {
+        arr[i] *= multiplier;
+    }
+    return arr;
 }
-else if (indexOfMaxValue % 6 == 5) {
+function maxValueXYZ(sixDOFEigenVector) {
+    var XYZContainer = [];
+    for (var i = 0; i < sixDOFEigenVector.length;) {
+        XYZContainer.push(sixDOFEigenVector[i]);
+        XYZContainer.push(sixDOFEigenVector[i + 1]);
+        XYZContainer.push(sixDOFEigenVector[i + 2]);
+        i += 6;
+    }
+    return Math.max.apply(null, XYZContainer);
 }
-console.log("indexOfMaxValue = " + indexOfMaxValue);
-console.log("maxValue = " + MaxValue);
 init();
 render();
 //# sourceMappingURL=out.js.map
